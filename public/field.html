@@ -15,9 +15,9 @@
         this.context = this.canvas.getContext("2d");
         this.w = w;
         this.h = h;
-        this.selection = { x: 0, y: 0}
+        this.cursor = { x: 0, y: 0}
         this.drawGrid();
-        this.drawSelection();
+        this.drawCursor();
         window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
       }
 
@@ -43,25 +43,25 @@
         },
 
         moveLeft: function() {
-          this.selection.x -= 1;
-          if (this.selection.x < 0) { this.selection.x = 0 };
+          this.cursor.x -= 1;
+          if (this.cursor.x < 0) { this.cursor.x = 0 };
         },
         moveRight: function() {
-          this.selection.x += 1;
-          if (this.selection.x >= this.w) { this.selection.x = this.w - 1 };
+          this.cursor.x += 1;
+          if (this.cursor.x >= this.w) { this.cursor.x = this.w - 1 };
         },
         moveUp: function() {
-          this.selection.y -= 1;
-          if (this.selection.y < 0) { this.selection.y = 0 };
+          this.cursor.y -= 1;
+          if (this.cursor.y < 0) { this.cursor.y = 0 };
         },
         moveDown: function() {
-          this.selection.y += 1;
-          if (this.selection.y >= this.h) { this.selection.y = this.h - 1 };
+          this.cursor.y += 1;
+          if (this.cursor.y >= this.h) { this.cursor.y = this.h - 1 };
         },
 
         repaint: function() {
           this.drawGrid();
-          this.drawSelection();
+          this.drawCursor();
         },
 
         drawGrid: function() {
@@ -81,22 +81,15 @@
           ctx.stroke();
         },
 
-        drawSelection: function() {
+        drawCursor: function() {
           var ctx = this.context;
           ctx.beginPath();
           ctx.lineWidth = 1;
-          var x = this.selection.x * PIXEL_SIZE + 0.5;
-          var y = this.selection.y * PIXEL_SIZE + 0.5;
+          var x = this.cursor.x * PIXEL_SIZE + 0.5;
+          var y = this.cursor.y * PIXEL_SIZE + 0.5;
           ctx.strokeStyle = "#999";
           ctx.strokeRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
         },
-
-        select: function(x, y) {
-          this.selection.x = x;
-          this.selection.y = y;
-          this.repaint();
-        }
-
       }
       var field = new Field(10, 10);
     </script>
