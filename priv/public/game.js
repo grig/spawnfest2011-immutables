@@ -2,14 +2,14 @@ Field = (function() {
 var PIXEL_SIZE = 30;
 var LINE_WIDTH = 3;
 
-function Field(w, h) {
-  this.canvas = this.initCanvas(w, h);
+function Field(data) {
+  this.w = data.width;
+  this.h = data.height;
+  this.canvas = this.initCanvas();
   this.context = this.canvas.getContext("2d");
   this.context.lineWidth = LINE_WIDTH;
-  this.w = w;
-  this.h = h;
   this.cursor = new Cursor(this, 0, 0);
-  this.cells = _.range(w).map(function(x) { return _.range(h).map(function(y) { return 0 })});
+  this.cells = data.cells || this.initCells();
   this.drawGrid();
   this.drawCursor();
   window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
@@ -17,11 +17,19 @@ function Field(w, h) {
 }
 
 Field.prototype = {
-  initCanvas: function(w, h) {
+  initCanvas: function() {
     var canvas = $("#field").get(0);
-    canvas.width = PIXEL_SIZE * w + LINE_WIDTH;
-    canvas.height = PIXEL_SIZE * h + LINE_WIDTH;
+    canvas.width = PIXEL_SIZE * this.w + LINE_WIDTH;
+    canvas.height = PIXEL_SIZE * this.h + LINE_WIDTH;
     return canvas;
+  },
+
+  initCells: function() {
+    _.range(this.w).map(function(x) {
+      return _.range(this.h).map(function(y) {
+        return 0;
+      });
+    });
   },
 
   onKeyDown: function(e) {

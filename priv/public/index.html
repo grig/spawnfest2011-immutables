@@ -10,7 +10,9 @@
   <body>
     <canvas id="field"></canvas>
     <script type="text/javascript">
-      var field = new Field(10, 10);
+      $.getJSON("/field", function(field) {
+        new Field(field);
+      });
     </script>
   </body>
 </html>
