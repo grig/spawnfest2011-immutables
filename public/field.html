@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Immutables</title>
+    <script src="raphael-min.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="underscore-min.js"></script>
+  </head>
+  <body>
+    <canvas id="field"></canvas>
+    <script type="text/javascript">
+      var PIXEL_SIZE = 10;
+      function Field(w, h) {
+        console.log("this = " + this);
+        this.canvas = $("#field").get(0);
+        this.canvas.width = PIXEL_SIZE * w + 1;
+        this.canvas.height = PIXEL_SIZE * h + 1;
+        this.w = w;
+        this.h = h;
+        this.drawGrid();
+      }
+      Field.prototype = {
+        drawGrid: function() {
+          ctx = this.canvas.getContext("2d");
+          for (var x = 0; x <= this.w; x++) {
+            ctx.moveTo(0.5 + x*PIXEL_SIZE, 0);
+            ctx.lineTo(0.5 + x*PIXEL_SIZE, this.canvas.height);
+          }
+          for (var y = 0; y <= this.h; y ++) {
+            ctx.moveTo(0, 0.5 + y*PIXEL_SIZE);
+            ctx.lineTo(this.canvas.width, 0.5 + y*PIXEL_SIZE);
+          }
+          ctx.strokeStyle = "#ccc";
+          ctx.stroke();
+        }
+      }
+      var field = new Field(50, 50);
+    </script>
+  </body>
+</html>
