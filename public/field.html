@@ -17,7 +17,7 @@
         this.context.lineWidth = LINE_WIDTH;
         this.w = w;
         this.h = h;
-        this.cursor = { x: 0, y: 0}
+        this.cursor = new Cursor(this, 0, 0);
         this.cells = _.range(w).map(function(x) { return _.range(h).map(function(y) { return 0 })});
         this.drawGrid();
         this.drawCursor();
@@ -36,52 +36,28 @@
         onKeyDown: function(e) {
           if (_.include([32, 37, 38, 39, 40], e.keyCode)) {
             e.preventDefault();
+            var cursor = this.cursor;
             switch(e.keyCode) {
-              case 37: this.moveLeft(); break;
-              case 38: this.moveUp(); break;
-              case 39: this.moveRight(); break;
-              case 40: this.moveDown(); break;
-              case 32: this.startPainting(); break;
+              case 37: cursor.moveLeft(); break;
+              case 38: cursor.moveUp(); break;
+              case 39: cursor.moveRight(); break;
+              case 40: cursor.moveDown(); break;
+              case 32: cursor.startPainting(); break;
             }
             this.repaint();
           }
         },
         onKeyUp: function(e) {
           if (e.keyCode === 32) {
-            this.stopPainting();
+            this.cursor.stopPainting();
           }
-        },
-
-        startPainting: function() {
-          this.isPainting = true;
-          this.paint();
-        },
-
-        stopPainting: function() {
-          this.isPainting = false;
         },
 
         paint: function() {
-          if(this.isPainting) {
-            this.cells[this.cursor.x][this.cursor.y] = 1;
-            this.repaint();
-          }
+          this.cells[this.cursor.x][this.cursor.y] = 1;
+          this.repaint();
         },
 
-        move: function(dx, dy) {
-          this.cursor.x += dx;
-          this.cursor.y += dy;
-          if (this.cursor.x < 0 ) { this.cursor.x = 0 };
-          if (this.cursor.y < 0 ) { this.cursor.y = 0 };
-          if (this.cursor.x >= this.w) { this.cursor.x = this.w - 1 };
-          if (this.cursor.y >= this.h) { this.cursor.y = this.h - 1 };
-          this.paint();
-        },
-
-        moveLeft:  function() { this.move(-1, 0); },
-        moveRight: function() { this.move(1, 0); },
-        moveUp: function() { this.move(0, -1); },
-        moveDown: function() { this.move(0, 1); }, 
 
         repaint: function() {
           this.drawGrid();
@@ -132,6 +108,41 @@
           ctx.strokeRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
         },
       }
+
+      function Cursor(field, x, y) {
+        this.field = field;
+        this.x = x || 0;
+        this.y = y || 0;
+      }
+
+      Cursor.prototype = {
+        move: function(dx, dy) {
+          this.x += dx;
+          this.y += dy;
+          if (this.x < 0 ) { this.x = 0 };
+          if (this.y < 0 ) { this.y = 0 };
+          if (this.x >= this.w) { this.x = this.w - 1 };
+          if (this.y >= this.h) { this.y = this.h - 1 };
+          if (this.isPainting) {
+            this.field.paint();
+          }
+        },
+
+        moveLeft:  function() { this.move(-1, 0); },
+        moveRight: function() { this.move(1, 0); },
+        moveUp: function() { this.move(0, -1); },
+        moveDown: function() { this.move(0, 1); },
+
+        startPainting: function() {
+          this.isPainting = true;
+          this.field.paint();
+        },
+
+        stopPainting: function() {
+          this.isPainting = false;
+        }
+      }
+
       var field = new Field(10, 10);
     </script>
   </body>
