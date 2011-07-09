@@ -11,17 +11,64 @@
     <script type="text/javascript">
       var PIXEL_SIZE = 10;
       function Field(w, h) {
-        console.log("this = " + this);
-        this.canvas = $("#field").get(0);
-        this.canvas.width = PIXEL_SIZE * w + 1;
-        this.canvas.height = PIXEL_SIZE * h + 1;
+        this.canvas = this.initCanvas(w, h);
+        this.context = this.canvas.getContext("2d");
         this.w = w;
         this.h = h;
+        this.selection = { x: 0, y: 0}
         this.drawGrid();
+        this.drawSelection();
+        window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
       }
+
       Field.prototype = {
+        initCanvas: function(w, h) {
+          var canvas = $("#field").get(0);
+          canvas.width = PIXEL_SIZE * w + 1;
+          canvas.height = PIXEL_SIZE * h + 1;
+          return canvas;
+        },
+
+        onKeyDown: function(e) {
+          if (_.include([37, 38, 39, 40], e.keyCode)) {
+            e.preventDefault();
+            switch(e.keyCode) {
+              case 37: this.moveLeft(); break;
+              case 38: this.moveUp(); break;
+              case 39: this.moveRight(); break;
+              case 40: this.moveDown(); break;
+            }
+            this.repaint();
+          }
+        },
+
+        moveLeft: function() {
+          this.selection.x -= 1;
+          if (this.selection.x < 0) { this.selection.x = 0 };
+        },
+        moveRight: function() {
+          this.selection.x += 1;
+          if (this.selection.x >= this.w) { this.selection.x = this.w - 1 };
+        },
+        moveUp: function() {
+          this.selection.y -= 1;
+          if (this.selection.y < 0) { this.selection.y = 0 };
+        },
+        moveDown: function() {
+          this.selection.y += 1;
+          if (this.selection.y >= this.h) { this.selection.y = this.h - 1 };
+        },
+
+        repaint: function() {
+          this.drawGrid();
+          this.drawSelection();
+        },
+
         drawGrid: function() {
-          ctx = this.canvas.getContext("2d");
+          var ctx = this.context;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
           for (var x = 0; x <= this.w; x++) {
             ctx.moveTo(0.5 + x*PIXEL_SIZE, 0);
             ctx.lineTo(0.5 + x*PIXEL_SIZE, this.canvas.height);
@@ -32,9 +79,26 @@
           }
           ctx.strokeStyle = "#ccc";
           ctx.stroke();
+        },
+
+        drawSelection: function() {
+          var ctx = this.context;
+          ctx.beginPath();
+          ctx.lineWidth = 1;
+          var x = this.selection.x * PIXEL_SIZE + 0.5;
+          var y = this.selection.y * PIXEL_SIZE + 0.5;
+          ctx.strokeStyle = "#999";
+          ctx.strokeRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
+        },
+
+        select: function(x, y) {
+          this.selection.x = x;
+          this.selection.y = y;
+          this.repaint();
         }
+
       }
-      var field = new Field(50, 50);
+      var field = new Field(10, 10);
     </script>
   </body>
 </html>
