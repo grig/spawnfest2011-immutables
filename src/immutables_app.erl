@@ -5,6 +5,8 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+-export([handle_http/1]).
+
 %% ===================================================================
 %% Application callbacks
 %% ===================================================================
@@ -14,3 +16,6 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
     ok.
+
+handle_http(Req) ->
+    Req:ok("Hello world").
