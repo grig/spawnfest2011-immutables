@@ -22,6 +22,7 @@
         this.drawGrid();
         this.drawCursor();
         window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
+        window.addEventListener("keyup", _.bind(this.onKeyUp, this), false);
       }
 
       Field.prototype = {
@@ -40,15 +41,31 @@
               case 38: this.moveUp(); break;
               case 39: this.moveRight(); break;
               case 40: this.moveDown(); break;
-              case 32: this.paint(); break;
+              case 32: this.startPainting(); break;
             }
             this.repaint();
           }
         },
+        onKeyUp: function(e) {
+          if (e.keyCode === 32) {
+            this.stopPainting();
+          }
+        },
+
+        startPainting: function() {
+          this.isPainting = true;
+          this.paint();
+        },
+
+        stopPainting: function() {
+          this.isPainting = false;
+        },
 
         paint: function() {
-          this.cells[this.cursor.x][this.cursor.y] = 1;
-          this.repaint();
+          if(this.isPainting) {
+            this.cells[this.cursor.x][this.cursor.y] = 1;
+            this.repaint();
+          }
         },
 
         move: function(dx, dy) {
@@ -58,6 +75,7 @@
           if (this.cursor.y < 0 ) { this.cursor.y = 0 };
           if (this.cursor.x >= this.w) { this.cursor.x = this.w - 1 };
           if (this.cursor.y >= this.h) { this.cursor.y = this.h - 1 };
+          this.paint();
         },
 
         moveLeft:  function() { this.move(-1, 0); },
