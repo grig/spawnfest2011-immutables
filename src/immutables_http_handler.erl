@@ -7,9 +7,11 @@ handle_http(Req) ->
     handle(Req:get(method), Req:resource([urldecode]), Req).
 
 handle('GET', [], Req) ->
-    Req:file("/Users/grig/Projects/spawnfest/immutables/priv/public/index.html");
+    DocRoot = filename:join(code:priv_dir(immutables), "public"),
+    Req:file(filename:join(DocRoot, "index.html"));
 handle('GET', Path, Req) ->
-    FullPath = "/Users/grig/Projects/spawnfest/immutables/priv/public/" ++ filename:join(Path),
+    DocRoot = filename:join(code:priv_dir(immutables), "public"),
+    FullPath = filename:join([DocRoot | Path]),
     case file:read_file_info(FullPath) of
 	{ok, #file_info{type=regular}} ->
 	    Req:file(FullPath);
