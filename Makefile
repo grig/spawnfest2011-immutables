@@ -1,6 +1,6 @@
 all: compile
 
 compile:
-	./rebar compile
+	./rebar compile skip_deps=true
 
 .PHONY: all compile
