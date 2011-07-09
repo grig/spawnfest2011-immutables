@@ -16,6 +16,7 @@
         this.w = w;
         this.h = h;
         this.cursor = { x: 0, y: 0}
+        this.cells = _.range(w).map(function(x) { return _.range(h).map(function(y) { return 0 })});
         this.drawGrid();
         this.drawCursor();
         window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
@@ -30,16 +31,22 @@
         },
 
         onKeyDown: function(e) {
-          if (_.include([37, 38, 39, 40], e.keyCode)) {
+          if (_.include([32, 37, 38, 39, 40], e.keyCode)) {
             e.preventDefault();
             switch(e.keyCode) {
               case 37: this.moveLeft(); break;
               case 38: this.moveUp(); break;
               case 39: this.moveRight(); break;
               case 40: this.moveDown(); break;
+              case 32: this.paint(); break;
             }
             this.repaint();
           }
+        },
+
+        paint: function() {
+          this.cells[this.cursor.x][this.cursor.y] = 1;
+          this.repaint();
         },
 
         move: function(dx, dy) {
@@ -58,6 +65,7 @@
 
         repaint: function() {
           this.drawGrid();
+          this.drawCells();
           this.drawCursor();
         },
 
@@ -76,6 +84,24 @@
           }
           ctx.strokeStyle = "#ccc";
           ctx.stroke();
+        },
+        drawCells: function() {
+          var ctx = this.context;
+          var columns = this.cells;
+          _.each(columns, function(column, x) {
+            _.each(column, function(cell, y) {
+              if (cell === 1) {
+                drawCell(x, y);
+              }
+            });
+          });
+          function drawCell(i, j) {
+            ctx.beginPath();
+            ctx.fillStyle = "#f00";
+            var x = i * PIXEL_SIZE + 1;
+            var y = j * PIXEL_SIZE + 1;
+            ctx.fillRect(x, y, PIXEL_SIZE - 1, PIXEL_SIZE - 1);
+          }
         },
 
         drawCursor: function() {
