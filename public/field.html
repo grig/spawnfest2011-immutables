@@ -42,22 +42,19 @@
           }
         },
 
-        moveLeft: function() {
-          this.cursor.x -= 1;
-          if (this.cursor.x < 0) { this.cursor.x = 0 };
-        },
-        moveRight: function() {
-          this.cursor.x += 1;
+        move: function(dx, dy) {
+          this.cursor.x += dx;
+          this.cursor.y += dy;
+          if (this.cursor.x < 0 ) { this.cursor.x = 0 };
+          if (this.cursor.y < 0 ) { this.cursor.y = 0 };
           if (this.cursor.x >= this.w) { this.cursor.x = this.w - 1 };
-        },
-        moveUp: function() {
-          this.cursor.y -= 1;
-          if (this.cursor.y < 0) { this.cursor.y = 0 };
-        },
-        moveDown: function() {
-          this.cursor.y += 1;
           if (this.cursor.y >= this.h) { this.cursor.y = this.h - 1 };
         },
+
+        moveLeft:  function() { this.move(-1, 0); },
+        moveRight: function() { this.move(1, 0); },
+        moveUp: function() { this.move(0, -1); },
+        moveDown: function() { this.move(0, 1); }, 
 
         repaint: function() {
           this.drawGrid();
