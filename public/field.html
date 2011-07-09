@@ -9,10 +9,12 @@
   <body>
     <canvas id="field"></canvas>
     <script type="text/javascript">
-      var PIXEL_SIZE = 10;
+      var PIXEL_SIZE = 30;
+      var LINE_WIDTH = 3;
       function Field(w, h) {
         this.canvas = this.initCanvas(w, h);
         this.context = this.canvas.getContext("2d");
+        this.context.lineWidth = LINE_WIDTH;
         this.w = w;
         this.h = h;
         this.cursor = { x: 0, y: 0}
@@ -25,8 +27,8 @@
       Field.prototype = {
         initCanvas: function(w, h) {
           var canvas = $("#field").get(0);
-          canvas.width = PIXEL_SIZE * w + 1;
-          canvas.height = PIXEL_SIZE * h + 1;
+          canvas.width = PIXEL_SIZE * w + LINE_WIDTH;
+          canvas.height = PIXEL_SIZE * h + LINE_WIDTH;
           return canvas;
         },
 
@@ -71,16 +73,15 @@
 
         drawGrid: function() {
           var ctx = this.context;
-          ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
           for (var x = 0; x <= this.w; x++) {
-            ctx.moveTo(0.5 + x*PIXEL_SIZE, 0);
-            ctx.lineTo(0.5 + x*PIXEL_SIZE, this.canvas.height);
+            ctx.moveTo(LINE_WIDTH / 2 + x*PIXEL_SIZE, 0);
+            ctx.lineTo(LINE_WIDTH / 2 + x*PIXEL_SIZE, this.canvas.height);
           }
           for (var y = 0; y <= this.h; y ++) {
-            ctx.moveTo(0, 0.5 + y*PIXEL_SIZE);
-            ctx.lineTo(this.canvas.width, 0.5 + y*PIXEL_SIZE);
+            ctx.moveTo(0, LINE_WIDTH / 2 + y*PIXEL_SIZE);
+            ctx.lineTo(this.canvas.width, LINE_WIDTH / 2 + y*PIXEL_SIZE);
           }
           ctx.strokeStyle = "#ccc";
           ctx.stroke();
@@ -98,18 +99,17 @@
           function drawCell(i, j) {
             ctx.beginPath();
             ctx.fillStyle = "#f00";
-            var x = i * PIXEL_SIZE + 1;
-            var y = j * PIXEL_SIZE + 1;
-            ctx.fillRect(x, y, PIXEL_SIZE - 1, PIXEL_SIZE - 1);
+            var x = i * PIXEL_SIZE + LINE_WIDTH;
+            var y = j * PIXEL_SIZE + LINE_WIDTH;
+            ctx.fillRect(x, y, PIXEL_SIZE - LINE_WIDTH, PIXEL_SIZE - LINE_WIDTH);
           }
         },
 
         drawCursor: function() {
           var ctx = this.context;
           ctx.beginPath();
-          ctx.lineWidth = 1;
-          var x = this.cursor.x * PIXEL_SIZE + 0.5;
-          var y = this.cursor.y * PIXEL_SIZE + 0.5;
+          var x = this.cursor.x * PIXEL_SIZE + LINE_WIDTH / 2;
+          var y = this.cursor.y * PIXEL_SIZE + LINE_WIDTH / 2;
           ctx.strokeStyle = "#999";
           ctx.strokeRect(x, y, PIXEL_SIZE, PIXEL_SIZE);
         },
