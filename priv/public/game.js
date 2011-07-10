@@ -1,5 +1,5 @@
 Field = (function() {
-var PIXEL_SIZE = 30;
+var PIXEL_SIZE = 20;
 var LINE_WIDTH = 3;
 
 function Field(data) {

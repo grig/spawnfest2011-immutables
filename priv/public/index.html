@@ -30,6 +30,10 @@
       <div id="error">&nbsp;</div>
     </div>
     <div id="game">
+      <div id="roster" style="float:right">
+        <h2>Users</h2>
+        <ul id="users"></ul>
+      </div>
       <canvas id="field"></canvas>
     </div>
     <ul id="log">
@@ -38,11 +42,17 @@
       if (!window.console) { window.console = {}; }
       if (!console.log) { console.log = function() {}; }
 
+      function add_user(user) {
+        $("#users").append("<li id=\"user-" + user.name + "\">" + user.name + "</li>");
+      }
       states = {
         login: function(data) {
           console.log(data);
           if (data.state !== undefined) {
             current_state = states.game;
+            _.each(data.state.users, function(user) {
+                add_user(user);
+            });
             new Field(data.state.field);
             $("#field").bind('paint', function(event, x, y) {
               socket.send({paint: [x, y]});
@@ -59,6 +69,9 @@
           }
         },
         game: function(data) {
+          if (data.joined) {
+            add_user(data.joined);
+          }
           console.log(data);
           $("#log").append("<li>" + data + "</li>");
         }
