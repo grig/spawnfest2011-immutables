@@ -1,10 +1,7 @@
 -module(immutables_http_handler).
--export([handle_http/1]).
+-export([handle/3]).
 
 -include_lib("kernel/include/file.hrl").
-
-handle_http(Req) ->
-    handle(Req:get(method), Req:resource([urldecode]), Req).
 
 handle('GET', [], Req) ->
     DocRoot = filename:join(code:priv_dir(immutables), "public"),

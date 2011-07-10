@@ -10,6 +10,8 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+    application:start(misultin),
+    application:start(socketio),
     immutables_sup:start_link().
 
 stop(_State) ->
