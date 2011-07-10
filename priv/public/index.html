@@ -47,6 +47,7 @@
       function add_user(user) {
         $("#users").append("<li id=\"user-" + user.name + "\">" + user.name + "</li>");
       }
+      var canvas;
       states = {
         login: function(data) {
           console.log(data);
@@ -55,7 +56,7 @@
             _.each(data.state.users, function(user) {
                 add_user(user);
             });
-            new Field(data.state.field);
+            canvas = new Field(data.state.field);
             $("#field").bind('paint', function(event, x, y) {
               socket.send({paint: [x, y]});
             });
@@ -73,6 +74,8 @@
         game: function(data) {
           if (data.joined) {
             add_user(data.joined);
+          } else if (data.painted) {
+            canvas.paintXY.apply(canvas, data.painted);
           }
           console.log(data);
           $("#log").append("<li>" + data + "</li>");

@@ -4,7 +4,7 @@
 %% gen_event callbacks exports
 -export([init/1,handle_event/2,handle_call/2,handle_info/2,terminate/2,code_change/3]).
 
--export([send_joined/3]).
+-export([send_joined/3, send_painted/3]).
 %% internal API
 
 send_state(Client, Field, Players) ->
@@ -20,6 +20,8 @@ send_echo(Client, Content) ->
 send_joined(Client, Name, Color) ->
     socketio_client:send(Client, #msg{content=[{<<"joined">>, [{<<"name">>, Name}, {<<"color">>, Color}]}], json=true}).
 
+send_painted(Client, X, Y) ->
+    socketio_client:send(Client, #msg{content=[{<<"painted">>, [X, Y]}], json=true}).
 %% gen_event callbacks implementation
 
 init([]) ->
@@ -37,6 +39,7 @@ handle_event({disconnect, Pid}, State) ->
 handle_event({message, Client, #msg{ content = [{<<"paint">>, [X, Y]}]}}, State) ->
     error_logger:info_msg("~p: paint(~p,~p)~n", [Client, X, Y]),
     immutables_field_server:paint(X, Y),
+    immutables_game_server:paint(Client, X, Y),
     {ok, State};
 
 handle_event({message, Client, #msg{ content = [{<<"login">>, Options}]}}, State) ->

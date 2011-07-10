@@ -57,8 +57,15 @@ handle_call(_Request, _From, State) ->
 joined(#player{'name'=Name, color=Color}, Players) ->
     [immutables_socket_handler:send_joined(Client, Name, Color) || {_, #player{client=Client}} <- dict:to_list(Players) ].
 
+handle_cast({paint, Client, X, Y}, State) ->
+    OtherPlayers = [ Player || {_Name, #player{client=C} = Player} <- dict:to_list(State), Client =/= C],
+    painted({X, Y}, OtherPlayers),
+    {noreply, State};
 handle_cast(_Msg, State) ->
   {noreply, State}.
+
+painted({X, Y}, L) ->
+    [immutables_socket_handler:send_painted(Client, X, Y) || #player{client=Client} <- L ].
 
 handle_info(_Info, State) ->
   {noreply, State}.

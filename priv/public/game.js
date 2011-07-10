@@ -52,11 +52,14 @@ Field.prototype = {
   },
 
   paint: function() {
-    this.cells[this.cursor.x][this.cursor.y] = 1;
-    this.repaint();
+    this.paintXY(this.cursor.x, this.cursor.y);
     $(this.canvas).trigger('paint', [this.cursor.x, this.cursor.y]);
   },
 
+  paintXY: function(x, y) {
+    this.cells[x][y] = 1;
+    this.repaint();
+  },
 
   repaint: function() {
     this.drawGrid();
