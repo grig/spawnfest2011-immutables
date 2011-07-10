@@ -10,7 +10,7 @@ new_cells(Width, _Height) ->
     lists:duplicate(Width, lists:duplicate(_Height, 0)).
 
 set(#field{cells=Columns} = Field, X, Y) ->
-    Column = lists:nth(X, Columns),
+    Column = lists:nth(X + 1, Columns),
     Column1 = replace(Column, Y, 1),
     {ok, Field#field{cells=replace(Columns, X, Column1)}}.
 
