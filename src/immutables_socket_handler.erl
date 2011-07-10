@@ -17,8 +17,12 @@ handle_event({client, Pid}, State) ->
 handle_event({disconnect, Pid}, State) ->
     error_logger:info_msg("Disconnected: ~p~n", [Pid]),
     {ok, State};
+handle_event({message, Client, #msg{ content = [{<<"paint">>, [X, Y]}]}}, State) ->
+    error_logger:info_msg("~p: paint(~p,~p)~n", [Client, X, Y]),
+    immutables_field_server:paint(X, Y),
+    {ok, State};
 handle_event({message, Client, #msg{ content = Content } = Msg}, State) ->
-    error_logger:info_msg("Message: ~p from ~p~n", [Msg, Client]),
+    error_logger:info_msg("Message: ~p from ~p~n", [Content, Client]),
     socketio_client:send(Client, #msg{content=[{<<"echo">>, Content}], json=true}),
     {ok, State};
 handle_event(E, State) ->

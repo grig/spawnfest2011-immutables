@@ -27,7 +27,7 @@
       });
       socket.on("connect", function() {
         $("#field").bind('paint', function(event, x, y) {
-          socket.send({msg: {paint: [x, y]}});
+          socket.send({paint: [x, y]});
         });
       });
       socket.connect();

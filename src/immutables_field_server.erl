@@ -10,7 +10,7 @@
 %% ------------------------------------------------------------------
 
 -export([start_link/0]).
--export([get/0]).
+-export([get/0, paint/2]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -25,10 +25,15 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+% Returns current field state
 -type field() :: term().
 -spec get() -> {ok, field()}.
 get() ->
     gen_server:call(?SERVER, get).
+
+-spec paint(integer(), integer()) -> ok.
+paint(X, Y) ->
+    gen_server:cast(?SERVER, {paint, X, Y}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -42,6 +47,9 @@ handle_call(get, _From, Field) ->
 handle_call(_Request, _From, Field) ->
     {noreply, ok, Field}.
 
+handle_cast({paint, X, Y}, Field) ->
+    {ok, Field1} = immutables_field:set(Field, X, Y),
+    {noreply, Field1};
 handle_cast(_Msg, Field) ->
   {noreply, Field}.
 

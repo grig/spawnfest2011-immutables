@@ -10,10 +10,9 @@ function Field(data) {
   this.context.lineWidth = LINE_WIDTH;
   this.cursor = new Cursor(this, 0, 0);
   this.cells = data.cells || this.initCells();
-  this.drawGrid();
-  this.drawCursor();
   window.addEventListener("keydown", _.bind(this.onKeyDown, this), false);
   window.addEventListener("keyup", _.bind(this.onKeyUp, this), false);
+  this.repaint();
 }
 
 Field.prototype = {
