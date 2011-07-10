@@ -6,13 +6,27 @@
     <script src="jquery.min.js"></script>
     <script src="underscore-min.js"></script>
     <script src="game.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
     <canvas id="field"></canvas>
+    <div id="log"></div>
     <script type="text/javascript">
       $.getJSON("/field", function(field) {
         new Field(field);
       });
+
+      var socket = new io.Socket(location.hostname);
+      socket.on("message", function(data) {
+        console.log(data);
+        $("#log").append(data);
+      });
+      socket.on("connect", function() {
+        $("#field").bind('paint', function(event, x, y) {
+          socket.send({msg: {paint: [x, y]}});
+        });
+      });
+      socket.connect();
     </script>
   </body>
 </html>

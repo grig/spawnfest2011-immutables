@@ -55,6 +55,7 @@ Field.prototype = {
   paint: function() {
     this.cells[this.cursor.x][this.cursor.y] = 1;
     this.repaint();
+    $(this.canvas).trigger('paint', [this.cursor.x, this.cursor.y]);
   },
 
 
