@@ -35,6 +35,8 @@
     <ul id="log">
     </ul>
     <script type="text/javascript">
+      if (!window.console) { window.console = {}; }
+      if (!console.log) { console.log = function() {}; }
 
       states = {
         login: function(data) {
