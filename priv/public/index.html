@@ -11,14 +11,27 @@
   </head>
   <body>
     <h1>The Immutables</h1>
+    <div id="login">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label>Your name: </label>
+            <input type="text" name="name" size="10" maxlength="10" required>
+          </li>
+          <li>
+            <label>Color: </label>
+            <input type="text" name="color" value="#F00" size="7" maxlength="7" required pattern="#[0-9a-fA-F]{3,6}" title="#RGB or #RRGGBB color value">
+          </li>
+        </ul>
+      </form>
+      <p>
+      <button id="start">Start</button>
+    </div>
     <div id="game">
       <canvas id="field"></canvas>
     </div>
     <div id="log"></div>
     <script type="text/javascript">
-      $.getJSON("/field", function(field) {
-        new Field(field);
-      });
 
       var socket = new io.Socket(location.hostname);
       socket.on("message", function(data) {
@@ -30,7 +43,18 @@
           socket.send({paint: [x, y]});
         });
       });
-      socket.connect();
+
+      $("#start").click(function(){
+        if ($("#login-form").get(0).checkValidity()) {
+          socket.connect();
+          $.getJSON("/field", function(field) {
+            $("#login").fadeOut(500, function() {
+              new Field(field);
+              $("#game").fadeIn();
+            });
+          });
+        }
+      });
     </script>
   </body>
 </html>
