@@ -4,6 +4,13 @@
 %% gen_event callbacks exports
 -export([init/1,handle_event/2,handle_call/2,handle_info/2,terminate/2,code_change/3]).
 
+%% API implementation
+
+send_state(Client, Field) ->
+    socketio_client:send(Client, #msg{content=[{<<"state">>, [{<<"field">>, immutables_field:to_json_data(Field)}]}], json=true}).
+
+send_echo(Client, Content) ->
+    socketio_client:send(Client, #msg{content=[{<<"echo">>, Content}], json=true}).
 %% gen_event callbacks implementation
 
 init([]) ->
@@ -25,12 +32,12 @@ handle_event({message, Client, #msg{ content = [{<<"paint">>, [X, Y]}]}}, State)
 handle_event({message, Client, #msg{ content = [{<<"login">>, Options}]}}, State) ->
     error_logger:info_msg("~p: login(~p)~n", [Client, Options]),
     {ok, Field} = immutables_field_server:get(),
-    socketio_client:send(Client, #msg{content=[{<<"state">>, [{<<"field">>, immutables_field:to_json_data(Field)}]}], json=true}),
+    send_state(Client, Field),
     {ok, State};
 
 handle_event({message, Client, #msg{ content = Content }}, State) ->
     error_logger:info_msg("Message: ~p from ~p~n", [Content, Client]),
-    socketio_client:send(Client, #msg{content=[{<<"echo">>, Content}], json=true}),
+    send_echo(Client, Content),
     {ok, State};
 handle_event(E, State) ->
     error_logger:error_msg("Unknown message ~p by ~p~n", [E, ?MODULE]),
