@@ -18,6 +18,7 @@
             <label>Your name: </label>
             <input type="text" name="name" size="10" maxlength="10" required>
           </li>
+     
           <li>
             <label>Color: </label>
             <input type="text" name="color" value="#F00" size="7" maxlength="7" required pattern="#[0-9a-fA-F]{3,6}" title="#RGB or #RRGGBB color value">
@@ -26,33 +27,53 @@
       </form>
       <p>
       <button id="start">Start</button>
+      <div id="error">&nbsp;</div>
     </div>
     <div id="game">
       <canvas id="field"></canvas>
     </div>
-    <div id="log"></div>
+    <ul id="log">
+    </ul>
     <script type="text/javascript">
 
-      var socket = new io.Socket(location.hostname);
-      socket.on("message", function(data) {
-        console.log(data);
-        $("#log").append(data);
-      });
-      socket.on("connect", function() {
-        $("#field").bind('paint', function(event, x, y) {
-          socket.send({paint: [x, y]});
-        });
-      });
-
-      $("#start").click(function(){
-        if ($("#login-form").get(0).checkValidity()) {
-          socket.connect();
-          $.getJSON("/field", function(field) {
+      states = {
+        login: function(data) {
+          console.log(data);
+          if (data.state !== undefined) {
+            current_state = states.game;
+            new Field(data.state.field);
+            $("#field").bind('paint', function(event, x, y) {
+              socket.send({paint: [x, y]});
+            });
             $("#login").fadeOut(500, function() {
-              new Field(field);
               $("#game").fadeIn();
             });
-          });
+          } else if (data.error !== undefined) {
+            console.log("error: " + data.error);
+            $("#error").empty().append("Error: " + data.error);
+          } else {
+            console.log("unknown event");
+            $("#error").empty().append("Error: uknown server reply");
+          }
+        },
+        game: function(data) {
+          console.log(data);
+          $("#log").append("<li>" + data + "</li>");
+        }
+      }
+      var current_state = states.login;
+
+      var socket = new io.Socket(location.hostname);
+      socket.on("message", function(data) { return current_state.call(this, data); });
+      socket.on("connect", function() {
+        console.log("connected");
+      });
+      socket.connect();
+
+      $("#start").click(function() {
+        var login_form = $("#login-form").get(0);
+        if (login_form.checkValidity()) {
+          socket.send({login: {name: login_form.name.value, color: login_form.color.value}});
         }
       });
     </script>

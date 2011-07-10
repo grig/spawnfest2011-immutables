@@ -20,10 +20,6 @@ handle('GET', Path, Req) ->
 handle(Method, Resource, Req) ->
     handle_resource(Method, Resource, Req).
 
-handle_resource('GET', ["field"], Req) ->
-    {ok, Field} = immutables_field_server:get(),
-    Req:respond(200, [{"Content-Type", "application/json"}],
-	immutables_field:to_json(Field));
 handle_resource(_, _, Req) ->
-    Req:ok("Hello, world!").
+    Req:ok("").
 

@@ -19,5 +19,8 @@ replace(L, N, X) ->
     {Prefix, [_|Tail]} = lists:split(N, L),
     Prefix ++ [X|Tail].
 
-to_json(#field{width=Width, height=Height, cells=Cells}) ->
-    mochijson2:encode({struct, [{width, Width}, {height, Height}, {cells, Cells}]}).
+to_json(Field) ->
+    mochijson2:encode({struct, to_json_data(Field)}).
+
+to_json_data(#field{width=Width, height=Height, cells=Cells}) ->
+    [{<<"width">>, Width}, {<<"height">>, Height}, {<<"cells">>, Cells}].

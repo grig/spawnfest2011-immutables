@@ -21,7 +21,14 @@ handle_event({message, Client, #msg{ content = [{<<"paint">>, [X, Y]}]}}, State)
     error_logger:info_msg("~p: paint(~p,~p)~n", [Client, X, Y]),
     immutables_field_server:paint(X, Y),
     {ok, State};
-handle_event({message, Client, #msg{ content = Content } = Msg}, State) ->
+
+handle_event({message, Client, #msg{ content = [{<<"login">>, Options}]}}, State) ->
+    error_logger:info_msg("~p: login(~p)~n", [Client, Options]),
+    {ok, Field} = immutables_field_server:get(),
+    socketio_client:send(Client, #msg{content=[{<<"state">>, [{<<"field">>, immutables_field:to_json_data(Field)}]}], json=true}),
+    {ok, State};
+
+handle_event({message, Client, #msg{ content = Content }}, State) ->
     error_logger:info_msg("Message: ~p from ~p~n", [Content, Client]),
     socketio_client:send(Client, #msg{content=[{<<"echo">>, Content}], json=true}),
     {ok, State};
